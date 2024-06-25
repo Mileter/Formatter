@@ -13,13 +13,11 @@ bool isParagraphBreak(istream & input)
 	// nessecery data
 	char first = input.get();
 	char second = input.get();
-	char third = input.get();
 	
 	// safety check
 	if(input.fail()) return false;
 	
 	// make sure that the data is not corrupted
-	input.putback(third);
 	input.putback(second);
 	input.putback(first);
 	
@@ -34,7 +32,11 @@ void initnewline(istream & input,  // any input  stream works... cin,  ifstream
   int lineCharCount = 0;
   while(true)
   {
-	if(isParagraphBreak(input)) output << "\n\n";
+	if(isParagraphBreak(input))
+	{
+		output << "\n\n";
+		lineCharCount = 0;
+	}
     string word;
     if(!(input >> word)) // no more chars
       break; 
