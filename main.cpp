@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
   else
   {
     cerr << "Dear user, please provide a task for me to do! :-)\n"
-         << "Use help for more information.\n";
+         << "Use `--help` for more information.\n";
     
     return 0;
   }
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 
   if(argc == 2 && cmds.find(request) != cmds.end())
     cmds[request]();
-  else if(argc == 4 && fcmds.find(request) != cmds.end())
+  else if(argc == 5 && fcmds.find(request) != fcmds.end())
     fcmds[request](argv[2], argv[3], stoi(argv[4]));
   else
     cerr << "Dear user, your request command `" << request << "` with " << argc - 2 << " extra request details, simply does not exist.\nPlease check your spelling again.";
