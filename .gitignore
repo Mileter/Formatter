@@ -1,0 +1,78 @@
+# Ignore build directories
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Ignore Visual Studio Code directories and files
+.vscode/
+*.code-workspace
+
+# Ignore CLion directories and files
+.idea/
+cmake-build-*/
+
+# Ignore Qt Creator directories and files
+*.pro.user
+*.pro.user.*
+
+# Ignore macOS files
+.DS_Store
+
+# Ignore Windows files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore Linux file system files
+.Trash-*
+
+# Ignore backup files
+*.bak
+*.swp
+*.swo
+*~
+
+# Ignore compiled object files
+*.o
+*.obj
+
+# Ignore compiled static libraries
+*.lib
+*.a
+
+# Ignore compiled dynamic libraries
+*.dll
+*.so
+*.dylib
+
+# Ignore executable files
+*.exe
+*.out
+*.app
+# Linux executables (no extension)
+MyProject
+
+# Ignore logs
+*.log
+
+# Ignore CMake-generated directories
+/build
+/CMakeFiles
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Ignore other CMake temporary files
+Testing/
+CTestTestfile.cmake
+CMakeLists.txt.user
+
+# Ignore IDE-specific files
+*.user
+*.user.*
+*.suo
+*.mode1v3
+*.mode2v3
+*.minidump
