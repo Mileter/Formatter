@@ -14,4 +14,4 @@ add_executable(formatter main.cpp kern/kern.cpp)
 target_include_directories(formatter PRIVATE ${CMAKE_SOURCE_DIR}/kern)
 
 # Set the output directory for the executable
-set_target_properties(MyProject PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+set_target_properties(formatter PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
