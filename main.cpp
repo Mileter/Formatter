@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <string>
+#include <cstdio>
 
 #include "kern/kern.h"
 
@@ -21,6 +22,7 @@ void autoNewline(string fileIn, string fileOut, int maxKerning)
   renewline(fin, fout, maxKerning);
   fin.close();
   fout.close();
+  rename(fileOut+".bak", fileOut);
 }
 
 unordered_map<string, function<void()>> cmds = {
