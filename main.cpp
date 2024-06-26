@@ -17,12 +17,13 @@ void printHelp()
 
 void autoNewline(string fileIn, string fileOut, int maxKerning)
 {
+  const char* bak = ".bak";
   ifstream fin(fileIn);
   ofstream fout(fileOut+".bak");
   renewline(fin, fout, maxKerning);
   fin.close();
   fout.close();
-  rename(fileOut+reinterpret_cast<const char*>(".bak"), fileOut.c_str());
+  rename(fileOut+bak, fileOut.c_str());
 }
 
 unordered_map<string, function<void()>> cmds = {
