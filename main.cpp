@@ -23,7 +23,7 @@ void autoNewline(string fileIn, string fileOut, int maxKerning)
   renewline(fin, fout, maxKerning);
   fin.close();
   fout.close();
-  rename(temp.c_str()+bak, fileOut.c_str());
+  rename(temp.c_str(), fileOut.c_str());
 }
 
 unordered_map<string, function<void()>> cmds = {
