@@ -11,4 +11,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(formatter main.cpp kern/kern.cpp)
 
 # Include the kern directory to find the header files
-target_include_directories(MyProject PRIVATE ${CMAKE_SOURCE_DIR}/kern)
+target_include_directories(formatter PRIVATE ${CMAKE_SOURCE_DIR}/kern)
