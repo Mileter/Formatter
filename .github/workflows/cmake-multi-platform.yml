@@ -78,4 +78,4 @@ jobs:
       with:
         name: build-${{ matrix.os }}-${{ matrix.c_compiler }}
         path: |
-          build/
+          build/build/
