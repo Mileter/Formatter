@@ -1,78 +1,73 @@
-name: CMake on multiple platforms
+name: CMake Cross-Platform Build
 
 on:
   push:
-    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main", "dev" ]
 
 jobs:
   build:
+    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-
     strategy:
-      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
-        cpp_compiler: [g++, clang++, cl]
-        include:
-          - os: windows-latest
-            cpp_compiler: g++
-            c_compiler: gcc
-          - os: ubuntu-latest
-            cpp_compiler: g++
-            c_compiler: gcc
-          - os: ubuntu-latest
-            cpp_compiler: clang++
-            c_compiler: clang
-        exclude:
-          - os: windows-latest
-            cpp_compiler: cl
-          - os: windows-latest
-            cpp_compiler: clang++
-          - os: ubuntu-latest
-            cpp_compiler: cl
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout source
+      uses: actions/checkout@v2
 
-    - name: Set up MinGW on Windows
-      if: matrix.os == 'windows-latest' && matrix.cpp_compiler == 'g++'
-      uses: egor-tensin/setup-mingw@v1
-      with:
-        architecture: x86_64
-
-    - name: Add MinGW to PATH on Windows
-      if: matrix.os == 'windows-latest' && matrix.cpp_compiler == 'g++'
-      run: echo "C:\\mingw64\\bin" | Out-File -Append -FilePath $env:GITHUB_PATH
-
-    - name: Install dependencies on Ubuntu
+    - name: Check compiler availability
       if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get update && sudo apt-get install -y cmake gcc g++ clang
-
-    - name: Set reusable strings
-      id: strings
-      shell: bash
-      run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-    - name: Configure CMake
       run: |
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-              -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-              -S ${{ github.workspace }}
+        if command -v g++ >/dev/null 2>&1; then
+          echo "GNU C++ is available."
+        else
+          echo "GNU C++ is not available. Installing."
+          apt install -y build-essentials
+        fi
 
-    - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+    - name: Check compiler availability
+      if: matrix.os == 'macos-latest'
+      run: |
+        if command -v clang++ >/dev/null 2>&1; then
+          echo "Clang/LLVM is available."
+        else
+          echo "Clang/LLVM is not available. Install via XCode."
+          xcode-select --install
+        fi
 
-    - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest --build-config ${{ matrix.build_type }}
+    - name: Set up MinGW for Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install msys2 -y
+        echo "::add-path::C:\\tools\\msys64\\usr\\bin"
+        echo "::add-path::C:\\tools\\msys64\\mingw32\\bin"
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-${{ matrix.os }}-${{ matrix.cpp_compiler }}
-        path: ${{ steps.strings.outputs.build-output-dir }}
+    - name: Create build directory
+      run: mkdir build
+      working-directory: .
+
+    - name: Run CMake on Ubuntu
+      run: cmake .. -DCMAKE_BUILD_TYPE=Release
+      working-directory: build
+      if: matrix.os == 'ubuntu-latest'
+
+    - name: Run CMake on macOS
+      run: cmake .. -DCMAKE_BUILD_TYPE=Release
+      working-directory: build
+      if: matrix.os == 'macos-latest'
+
+    - name: Run CMake on Windows
+      run: cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+      working-directory: build
+      if: matrix.os == 'windows-latest'
+
+    - name: Build on Ubuntu and macOS
+      run: cmake --build .
+      working-directory: build
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+
+    - name: Build on Windows
+      run: mingw32-make
+      working-directory: build
+      if: matrix.os == 'windows-latest'
