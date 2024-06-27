@@ -12,7 +12,12 @@ using namespace std;
 void printHelp()
 {
   cout << "USAGE:\n"
-       << "";
+       << "formatter [options] <...>\n\n"
+	   << "          --help\n"
+	   << "          ^ Displays this message.\n\n"
+	   << "          auto-newline [input filename] [output filename] [maximun column legnth]\n"
+	   << "          ana          (^ Same as above.)\n"
+	   << "          reformats to have specified column legnths (specified in maximun column legnth.)";
 }
 
 void autoNewline(string fileIn, string fileOut, int maxKerning)
