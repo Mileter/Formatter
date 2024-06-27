@@ -7,15 +7,11 @@ project(formatter)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-	# Use static runtime libraries
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-else()
+if (NOT (CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
 	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 	set(BUILD_SHARED_LIBS OFF)
 	set(CMAKE_EXE_LINKER_FLAGS "-static")
 endif()
-
 # Add the executable
 add_executable(formatter main.cpp kern/kern.cpp)
 
