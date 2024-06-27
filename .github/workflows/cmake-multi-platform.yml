@@ -1,74 +1,89 @@
-name: CMake Cross-Platform Build
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
+name: CMake on a single platform
 
 on:
-  push:
-  pull_request:
+  - push
+  - pull_request
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: RelWithDebInfo
 
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+  build-linux:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Check compiler availability
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        if command -v g++ >/dev/null 2>&1; then
-          echo "GNU C++ is available."
-        else
-          echo "GNU C++ is not available. Installing."
-          apt install -y build-essentials
-        fi
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Check compiler availability
-      if: matrix.os == 'macos-latest'
-      run: |
-        if command -v clang++ >/dev/null 2>&1; then
-          echo "Clang/LLVM is available."
-        else
-          echo "Clang/LLVM is not available. Install via XCode."
-          xcode-select --install
-        fi
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Set up MinGW for Windows
-      if: matrix.os == 'windows-latest'
-      run: |
-        choco install msys2 -y
-        echo "::add-path::C:\\tools\\msys64\\usr\\bin"
-        echo "::add-path::C:\\tools\\msys64\\mingw32\\bin"
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}}
+    - name: Saving Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-linux
+        path: /build
+  build-windows:
+    runs-on: windows-latest
 
-    - name: Create build directory
-      run: mkdir build
-      working-directory: .
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Run CMake on Ubuntu
-      run: cmake .. -DCMAKE_BUILD_TYPE=Release
-      working-directory: build
-      if: matrix.os == 'ubuntu-latest'
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Run CMake on macOS
-      run: cmake .. -DCMAKE_BUILD_TYPE=Release
-      working-directory: build
-      if: matrix.os == 'macos-latest'
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}}
+    - name: Saving Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-windows
+        path: /build
+  build-macos:
+    runs-on: macos-latest
 
-    - name: Run CMake on Windows
-      run: cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
-      working-directory: build
-      if: matrix.os == 'windows-latest'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Build on Ubuntu and macOS
-      run: cmake --build .
-      working-directory: build
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Build on Windows
-      run: mingw32-make
-      working-directory: build
-      if: matrix.os == 'windows-latest'
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}}
+    - name: Saving Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-macos
+        path: /build
+
