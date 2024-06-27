@@ -33,7 +33,7 @@ void autoNewline(string fileIn, string fileOut, int maxKerning)
     }
     if(field == 'A') return; // abort
     // overwrite
-	if(remove(fileOut.c_str))
+	if(remove(fileOut.c_str())
 	{
 	  cerr << "\nAccess denied. Aborting.";
 	  return;
