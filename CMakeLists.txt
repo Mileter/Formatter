@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 if (NOT (CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
 	if(CMAKE_COMPILER_ID STREQUAL "MSVC")
 	    message(STATUS "STATIC LINKING: Setting MSVC parameters.")
-		set(MSVC_RUNTIME_LIBRARY "MultiThreaded")
+		set_property(TARGET formatter MSVC_RUNTIME_LIBRARY "MultiThreaded")
 		message(VERBOSE "MSVC_RUNTIME_LIBRARY: MultiThreaded")
 	elseif()
 	    message(STATUS "STATIC LINKING: Setting GNU GCC/G++ parameters.")
@@ -24,6 +24,7 @@ if (NOT (CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
 else()
 	message(STATUS "STATIC LINKING: Darwin detected; not statically linking.")
 endif()
+
 # Add the executable
 add_executable(formatter main.cpp kern/kern.cpp)
 
