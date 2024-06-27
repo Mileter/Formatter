@@ -44,13 +44,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    
-    # really?
-    
     - name: Update msys2
-        run: "C:/msys64/msys2" -c "pacman -Syuu"
+        run: "C:/msys64/msys2.exe" -c "pacman -Syuu"
     - name: Install MinGW-w64
-        run: "C:/msys64/msys2" -c "pacman -S mingw-w64-ucrt-x86_64-toolchain"
+        run: "C:/msys64/msys2.exe" -c "pacman -S mingw-w64-ucrt-x86_64-toolchain"
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
