@@ -44,6 +44,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    
+    # really?
+    
     - name: Update msys2
         run: C:\\msys64\\msys2 -c 'pacman -Syuu'
     - name: Install MinGW-w64
