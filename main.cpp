@@ -23,7 +23,23 @@ void autoNewline(string fileIn, string fileOut, int maxKerning)
   renewline(fin, fout, maxKerning);
   fin.close();
   fout.close();
-  rename(temp.c_str(), fileOut.c_str());
+  if (rename(temp.c_str(), fileOut.c_str()))
+  {
+	char field;
+	while(field != 'A' && field != 'O')
+	{
+	  cerr << "\nFile already exists.\nOverwrite, Abort?";
+      field = cin.get();
+    }
+    if(field == 'A') return; // abort
+    // overwrite
+	if(remove(fileOut.c_str))
+	{
+	  cerr << "\nAccess denied. Aborting.";
+	  return;
+	}
+	rename(temp.c_str(), fileOut.c_str());
+  }
 }
 
 unordered_map<string, function<void()>> cmds = {
