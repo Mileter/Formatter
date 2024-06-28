@@ -40,13 +40,13 @@ void initnewline(istream & input,  // any input  stream works... cin,  ifstream
     string word;
     if(!(input >> word)) // no more chars
       break; 
-    if(lineCharCount + word.size() > maxKerning) // to many words
-    {
+    if(lineCharCount + word.size() - 1 > maxKerning) // to many words
+    {                            // ^ -1 to not account for the last space
       output << endl;
-      lineCharCount = 0;                         // carridge return (restart to col 0)
+      lineCharCount = 0;                             // carridge return (restart to col 0)
     }
     output << word << " ";
-    lineCharCount += word.size();
+    lineCharCount += word.size() + 1;                // account for words and spaces
   }
 }
 
