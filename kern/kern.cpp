@@ -67,7 +67,7 @@ int autoNewline(int argc, ...)
 
 	va_list args;
 	va_start(args, argc);		// Corrected: use argc instead of undefined
-								// `n`
+	// `n`
 
 	// Read the arguments
 	std::string fileIn = std::string(va_arg(args, char *));
@@ -79,8 +79,8 @@ int autoNewline(int argc, ...)
 	{
 		// Convert the 3rd argument to an integer (maxKerning)
 		maxKerning = std::stoi(va_arg(args, char *));	// Use std::stoi for
-														// string to int
-														// conversion
+		// string to int
+		// conversion
 	}
 	catch( ...)					// Catch all exceptions
 	{

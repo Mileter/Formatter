@@ -4,8 +4,20 @@ using namespace std;
 
 string prog_name = "formatter";
 
+vector < pair < string, string > >helpDesc = {
+	{"help", "Prints this message."},
+	{"ana, auto-newline",
+	 "Re-newlines documents to fit within a certain horizontal width."}
+};
+
+map < string, string > helpArgs = {
+	{"help", ""},				// no arguments
+	{"ana", "<input file> <output file> <max character limit>"},
+	{"auto-newline", "<input file> <output file> <max character limit>"}
+};
+
 // print commands
-void printHelp(int argc, ...)
+int printHelp(int argc, ...)
 {
 	if (argc > 0)
 	{
@@ -15,8 +27,8 @@ void printHelp(int argc, ...)
 		for (int i = 0; i < argc; i++)
 		{
 			const char *arg = va_arg(args, const char *);	// Get each
-															// argument as a
-															// const char*
+			// argument as a
+			// const char*
 			// Print the specific help for this argument
 			if (helpArgs.find(arg) != helpArgs.end())
 			{
@@ -40,32 +52,23 @@ void printHelp(int argc, ...)
 			cout << desc.first << " " << desc.second << "\n";
 		}
 	}
+	return ERR_OK;
 }
 
-unordered_map < string, function < int (int argc, char **...) >> cmds = {
-	{"help", printHelp},
+unordered_map < string, int (*)(int argc, ...)> cmds;
 
-	{"ana", autoNewline},
-	{"auto-newline", autoNewline}
-};
-
-vector < pair < string, string > >helpDesc = {
-	{"help", "Prints this message."},
-	{"ana, auto-newline",
-	 "Re-newlines documents to fit within a certain horizontal width."}
-};
-
-map < string, string > helpArgs = {
-	{"help", ""},				// no arguments
-	{"ana", "<input file> <output file> <max character limit>"},
-	{"auto-newline", "<input file> <output file> <max character limit>"}
-};
+void bindCmds()
+{
+	cmds["help"] = &printHelp;
+	cmds["ana" ] = &autoNewline;
+	cmds["auto-newline"] = &autoNewline;
+}
 
 int main(int argc, char *argv[])
 {
-	if (argv[0][0] != NULL)		// from standard ISO C11: argv[0][0] shall be
-								// the null character if the program name is
-								// not available from the host environment.
+	if (argc < 0) // from standard ISO C11: argv[0][0] shall be
+		// the null character if the program name is
+		// not available from the host environment.
 	{
 		char *last_slash;
 		last_slash = strrchr(argv[0], '/');
@@ -74,7 +77,7 @@ int main(int argc, char *argv[])
 		else
 			prog_name = string(argv[0]);
 	}
-
+	
 	cout << "formatter (c) Mileter under MIT License; " << F_BUILD_TYPE << " "
 		<< F_BUILD_VER << "\n";
 	string request;
@@ -86,16 +89,32 @@ int main(int argc, char *argv[])
 
 		return 0;
 	}
-
-	if (cmds.find(request) == cmds.end())
-		request = "help";
-
-	int result = cmds[request] (argc - 2, argv[2]);
-
+	
+	bindCmds();
+	
+	int result;
+	if(cmds.find(request) != cmds.end())
+		result = apply(cmds[request] (argc - 2, argv + 2));
+	else
+		result = ERR_UNKNOWN_CMD;
+	
 	if (result == ERR_IMPROPER_ARGS)
-		cerr << "The routine failed with error: improper arguments.\n"
-			<< "RUN " << prog_name << " help " << request <<
-			"to check whether all arguments were passed.";
-
+	{
+		cerr << "The routine failed with an error: improper arguments.\n"
+			 << "RUN " << prog_name << " help " << request
+			 << " TO check whether all arguments were passed.";
+	}
+	else if(result == ERR_UNKNOWN_CMD)
+	{
+		cout << "The routine failed with an error: unknown option (tried to find option `" << request << "`, but failed to resolve.)\n"
+                  << "RUN " << prog_name << " help TO check whether the name is typed correctly or version." << std::endl;
+	}
+	else if(result != 0)
+	{
+		cout << "Recieved unexpected error code " << result << ".";
+	}
+	else
+		cout << "Finished with status success.";
+	
 	return 0;
 }
