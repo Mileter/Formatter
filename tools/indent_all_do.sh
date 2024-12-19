@@ -1,5 +1,5 @@
 # Find all source/header files
-files=$(find ../source -type f \( -iname "*.cpp" -o -iname "*.c" -o -iname "*.h" -o -iname "*.hpp" \))
+files=$(find ../ -type f \( -iname "*.cpp" -o -iname "*.c" -o -iname "*.h" -o -iname "*.hpp" \))
 
 # List of files (improved handling of spaces)
 printf "%s\n" $files
