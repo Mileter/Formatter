@@ -57,8 +57,37 @@ void renewline(istream & input, ostream & output, int maxKerning)
 	initnewline(input, output, maxKerning);
 }
 
-void autoNewline(string fileIn, string fileOut, int maxKerning)
+int autoNewline(int argc, ...) 
 {
+    // Check that we have exactly 3 arguments
+    if (argc != 3)
+    {
+        return ERR_IMPROPER_ARGS;
+    }
+    
+    va_list args;
+    va_start(args, argc);  // Corrected: use argc instead of undefined `n`
+
+    // Read the arguments
+    std::string fileIn = std::string(va_arg(args, char*));
+    std::string fileOut = std::string(va_arg(args, char*));
+    
+    int maxKerning;
+    
+    try
+    {
+        // Convert the 3rd argument to an integer (maxKerning)
+        maxKerning = std::stoi(va_arg(args, char*));  // Use std::stoi for string to int conversion
+    }
+    catch(...)  // Catch all exceptions
+    {
+        va_end(args);  // Clean up va_list
+        return ERR_IMPROPER_ARGS;
+    }
+
+    // Clean up va_list
+	va_end(args);
+	
 	string temp = fileOut + ".bak";
 	ifstream fin(fileIn);
 	ofstream fout(temp);
@@ -78,9 +107,10 @@ void autoNewline(string fileIn, string fileOut, int maxKerning)
 		// overwrite
 		if (remove(fileOut.c_str()))
 		{
-			cerr << "\nAccess denied. Aborting.";
-			return;
+			return ERR_FILEIO_DENIED;
 		}
 		rename(temp.c_str(), fileOut.c_str());
 	}
+	
+	return ERR_OK;
 }
