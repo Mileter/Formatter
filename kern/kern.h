@@ -9,3 +9,5 @@ void initnewline(istream & input,  // any input  stream works... cin,  ifstream
 void renewline(istream & input,
                ostream & output,
                int maxKerning);
+
+void autoNewline(string fileIn, string fileOut, int maxKerning);

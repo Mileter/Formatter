@@ -56,3 +56,30 @@ void renewline(istream & input,
 {
   initnewline(input, output, maxKerning);
 }
+
+void autoNewline(string fileIn, string fileOut, int maxKerning)
+{
+  string temp = fileOut+".bak"; 
+  ifstream fin(fileIn);
+  ofstream fout(temp);
+  renewline(fin, fout, maxKerning);
+  fin.close();
+  fout.close();
+  if (rename(temp.c_str(), fileOut.c_str()))
+  {
+	char field;
+	while(field != 'A' && field != 'O')
+	{
+	  cerr << "\nFile already exists.\nOverwrite, Abort?";
+      field = cin.get();
+    }
+    if(field == 'A') return; // abort
+    // overwrite
+	if(remove(fileOut.c_str()))
+	{
+	  cerr << "\nAccess denied. Aborting.";
+	  return;
+	}
+	rename(temp.c_str(), fileOut.c_str());
+  }
+}
